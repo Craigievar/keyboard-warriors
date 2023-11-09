@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>TSBR Debug Client</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <script src="client_script.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <h1>TSBR Debug Client</h1>
+      <button id="connect">Connect</button>
+      <button id="disconnect">Disconnect</button>
+    </header>
+    <div>
+      <button id="create_game">Create Game</button>
+      <button id="start_game">Start Game</button>
+      <button id="leave_game">Leave Game</button>
+    </div>
+    <div>
+      <input id="game_code_input" type="text" placeholder="Enter game code" />
+      <button id="join_game_code">Join Game with Code</button>
+      <button id="join_game_any">Join Any Game</button>
+    </div>
+    <div style="display: flex; align-items: baseline">
+      <div>
+        <p>
+          Current Game:
+          <span id="current_game_code">Waiting for code...</span>
+        </p>
+      </div>
+    </div>
+  </br>
+    <div>
+      <div style="margin-left: 20px">
+        <label for="key_input">Type Word:</label>
+        <input id="key_input" type="text" placeholder="Type here..." />
+        <p id="current_word">Waiting for word...</p>
+      </div>
+    </div></br>
+    <div>
+      <p>Status: <span id="alive">Waiting...</span></p>
+      <p>Right Answers: <span id="right_answers">Waiting...</span></p>
+      <p>Wrong Answers: <span id="wrong_answers">Waiting...</span></p>
+    </div>
+    <div>
+      <div>
+        <h1>DEBUG</h1>
+        <p>Game List</p>
+        <ul id="game_list"></ul>
+    </div>
+    
+    </div>
+  </body>
+</html>

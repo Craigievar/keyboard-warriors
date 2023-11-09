@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: express-socket-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: express-socket-server
+  template:
+    metadata:
+      labels:
+        app: express-socket-server
+    spec:
+      containers:
+        - name: express-socket-server
+          image: gcr.io/YOUR_PROJECT_ID/express-socket-server:latest
+          ports:
+            - containerPort: 3000
