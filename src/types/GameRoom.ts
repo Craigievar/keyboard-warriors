@@ -4,6 +4,8 @@ import { Player } from "./Player";
 import { randomUUID } from "crypto";
 import words from "../WordList";
 
+const Statsig = require("statsig-node");
+
 export class GameRoom {
   players: Player[];
   state: GameState;
@@ -32,7 +34,7 @@ export class GameRoom {
     this.winner = null;
     this.roomId = randomUUID();
     this.code = generateRandomString(4);
-    this.public = false;
+    this.public = true;
     this.numPlayersAlive = null;
     this.lastPlayerJoinOrLeave = null;
   }
@@ -72,6 +74,12 @@ export class GameRoom {
         if (player.alive) {
           this.winner = player;
           player.won = true;
+          Statsig.logEvent(
+            {
+              customIDs: { gameID: this.roomId, socketID: player.id },
+            },
+            "won_game"
+          );
         }
         player.sendUpdate();
       }
@@ -137,11 +145,20 @@ export class GameRoom {
   }
 
   public addPlayer(player: Player) {
+    if (this.players.some((p) => p.id === player.id)) {
+      return;
+    }
     this.players.push(player);
     player.game = this;
     this.sendCurrentPlayercount();
     player.sendUpdate();
-
+    Statsig.logEvent(
+      {
+        customIDs: { gameID: this.roomId, socketID: player.id },
+      },
+      "joined_game"
+    );
+    Statsig.flush();
     this.lastPlayerJoinOrLeave = Date.now();
   }
 
@@ -153,7 +170,12 @@ export class GameRoom {
 
     console.log("sending current game code");
     player.message("current_game_code", "    ");
-
+    Statsig.logEvent(
+      {
+        customIDs: { gameID: this.roomId, socketID: player.id },
+      },
+      "left_game"
+    );
     this.sendCurrentPlayercount();
     player.sendUpdate();
   }
@@ -161,6 +183,14 @@ export class GameRoom {
   public startGame() {
     for (const player of this.players) {
       player.setUpForGame();
+
+      Statsig.logEvent(
+        {
+          customIDs: { gameID: this.roomId, socketID: player.id },
+        },
+        "game_start"
+      );
+      Statsig.flush();
     }
     this.state = "INGAME";
     this.sendCurrentPlayercount();
