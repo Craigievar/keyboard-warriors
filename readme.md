@@ -2,7 +2,7 @@
 
 # Running
 
-Open client/index.html (on two tabs if you want to play)
+Open client/index.html in a browser (on two tabs if you want to play)
 
 Run npm start in ./src
 
