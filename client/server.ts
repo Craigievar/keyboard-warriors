@@ -5,7 +5,7 @@ import express = require("express");
 
 const fs = require("fs");
 
-const PORT: number | string = process.env.PORT || 3000;
+const PORT: number | string = process.env.PORT || 3001;
 
 const app = express();
 
