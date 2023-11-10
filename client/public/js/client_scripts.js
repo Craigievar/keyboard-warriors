@@ -29,7 +29,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
   joinGameAnyButton.disabled = true;
   keyInputField.disabled = true;
   startGameButton.disabled = true;
-  const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com:10661";
+  const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com";
   console.log("Trying to connect to " + server);
 
   connectButton.addEventListener("click", function () {
