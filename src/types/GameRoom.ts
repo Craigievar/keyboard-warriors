@@ -143,10 +143,7 @@ export class GameRoom {
 
   public sendCurrentPlayercount() {
     for (const p of this.players) {
-      p.message(
-        "current_game_code",
-        `${this.code} (${this.state}) - ${this.players.length} Player(s)`
-      );
+      p.sendUpdate();
     }
   }
 

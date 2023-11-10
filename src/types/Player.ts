@@ -141,6 +141,9 @@ export class Player {
       playersLeft: this.game?.playersAlive(),
       currentGameState: this.game?.state,
       won: this.won,
+      //todo factor these into separate websocket calls
+      playersInLobby: this.game?.players.length,
+      lobbyCode: this.game?.code,
     });
   }
 

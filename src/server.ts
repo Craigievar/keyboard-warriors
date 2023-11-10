@@ -14,11 +14,12 @@ import express = require("express");
 const Statsig = require("statsig-node");
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+const statsigTier = process.env.STATSIG_TIER ?? "staging";
 
 console.log("Initializing Statsig");
 Statsig.initialize(
   process.env.STATSIG_SERVER_SECRET,
-  { environment: { tier: "staging" } } // optional, pass options here if needed
+  { environment: { tier: statsigTier } } // optional, pass options here if needed
 ).then(() => {
   console.log("Statsig initialized");
   const app = express();
@@ -108,6 +109,9 @@ Statsig.initialize(
       const game = games.find((g) => g.code === data.code);
       if (game && game.state === "LOBBY") {
         if (player) {
+          if (player.game) {
+            player.game.removePlayer(player);
+          }
           game.addPlayer(player);
           Statsig.logEvent(
             {
