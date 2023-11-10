@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc server.ts && node server.js",
-    "build": "npm i && tsc server.ts",
-    "build-run": "npm i && npm install typescript -g && tsc server.ts && node server.js"
+    "build": "npm i && && npm install typescript -g && tsc server.ts",
+    "build-run": "node server.js"
   },
   "author": "",
   "license": "ISC",
