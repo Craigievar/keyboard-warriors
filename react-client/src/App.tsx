@@ -75,6 +75,11 @@ const App: React.FC = () => {
     socket?.emit("join_game_any");
   };
 
+  const handleJoinGameByCode = (code: string) => {
+    console.log("Joining a a game");
+    socket?.emit("join_game_code", code);
+  };
+
   const handleStartGame = () => {
     socket?.emit("start_game");
   };
@@ -102,6 +107,7 @@ const App: React.FC = () => {
           <MenuView
             isConnected={isConnected}
             onConnect={handleConnect}
+            onJoinByCode={handleJoinGameByCode}
             onJoin={handleJoinGame}
             onDisconnect={handleDisconnect}
             onCreateGame={handleCreateGame}

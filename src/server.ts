@@ -165,6 +165,20 @@ Statsig.initialize(
             }
           );
           game.addPlayer(player);
+        } else {
+          const game = new GameRoom();
+          if (player) {
+            game.addPlayer(player);
+            games.push(game);
+
+            Statsig.logEvent(
+              {
+                customIDs: { gameID: game.roomId, socketID: player.id },
+              },
+              "created_game"
+            );
+            console.log(JSON.stringify(player.game?.code));
+          }
         }
       }
     });
