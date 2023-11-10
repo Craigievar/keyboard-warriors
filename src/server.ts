@@ -23,6 +23,10 @@ Statsig.initialize(
   const app = express();
   app.use(cors()); // Enable CORS for all routes
 
+  app.get("/health", (req, res) => {
+    res.send("I'm ok");
+  });
+
   const server = http.createServer(app);
   const io = new SocketIOServer(server, {
     cors: {
