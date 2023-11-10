@@ -31,7 +31,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
   startGameButton.disabled = true;
 
   connectButton.addEventListener("click", function () {
-    socket = io("https://keyboard-warrior-server.onrender.com:10000/");
+    socket = io("https://keyboardwarrior-1011e99642b5.herokuapp.com:32300");
     connectButton.disabled = true;
     disconnectButton.disabled = false;
     disconnectButton.disabled = false;
