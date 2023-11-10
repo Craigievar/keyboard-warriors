@@ -10,6 +10,7 @@ specifiers:
   express: ^4.17.1
   socket.io: ^4.0.0
   statsig-node: ^5.11.0
+  typescript: ^5.2.2
 
 dependencies:
   '@types/cors': 2.8.16
@@ -21,6 +22,7 @@ dependencies:
   express: 4.18.2
   socket.io: 4.7.2
   statsig-node: 5.11.0
+  typescript: 5.2.2
 
 packages:
 
@@ -687,6 +689,12 @@ packages:
     dependencies:
       media-typer: 0.3.0
       mime-types: 2.1.35
+    dev: false
+
+  /typescript/5.2.2:
+    resolution: {integrity: sha512-mI4WrpHsbCIcwT9cF4FZvr80QUeKvsUsUvKDoR+X/7XHQH98xYD8YHZg7ANtz2GtZt/CBq2QJ0thkGJMHfqc1w==}
+    engines: {node: '>=14.17'}
+    hasBin: true
     dev: false
 
   /ua-parser-js/1.0.37:
