@@ -8,7 +8,6 @@ import { Server as SocketIOServer } from "socket.io";
 import { randomElement } from "./gamelogic";
 
 require("dotenv").config();
-require("dotenv").config();
 
 import express = require("express");
 
