@@ -1,1 +1,1 @@
-web: npm strt
+web: npm build && npm start
