@@ -46,7 +46,7 @@ Statsig.initialize(
   io.on("connection", (socket) => {
     console.log("New client connected");
     const player = new Player(socket, sendSocketMessage);
-
+    player.sendUpdate();
     socketMap.set(socket.id, player);
 
     socket.on("name", function (data) {
@@ -105,6 +105,7 @@ Statsig.initialize(
               customIDs: { gameID: game.roomId, socketID: player.id },
             },
             "joined_game",
+            null,
             {
               used_code: true,
               joined_public: false,
@@ -144,6 +145,7 @@ Statsig.initialize(
               customIDs: { gameID: game.roomId, socketID: player.id },
             },
             "joined_game",
+            null,
             {
               used_code: false,
               joined_public: true,

@@ -1,3 +1,3 @@
-const WORDS_TO_DIE = 20;
+const WORDS_TO_DIE = 3;
 
 export { WORDS_TO_DIE };

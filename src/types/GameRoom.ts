@@ -21,6 +21,7 @@ export class GameRoom {
   public: boolean;
   numPlayersAlive: number | null;
   lastPlayerJoinOrLeave: number | null;
+  playersWhenGameStarted: number | null;
 
   constructor() {
     this.players = [];
@@ -37,6 +38,7 @@ export class GameRoom {
     this.public = true;
     this.numPlayersAlive = null;
     this.lastPlayerJoinOrLeave = null;
+    this.playersWhenGameStarted = null;
   }
 
   public generateWords() {
@@ -63,7 +65,7 @@ export class GameRoom {
   }
 
   public checkForGameEnd() {
-    if (this.numPlayersAlive && this.numPlayersAlive <= 1) {
+    if (this.numPlayersAlive != null && this.numPlayersAlive <= 1) {
       console.log(
         `Game over, winner is ${this.players.find((p) => p.alive)?.id}`
       );
@@ -78,7 +80,11 @@ export class GameRoom {
             {
               customIDs: { gameID: this.roomId, socketID: player.id },
             },
-            "won_game"
+            "won_game",
+            null,
+            {
+              total_players: this.playersWhenGameStarted,
+            }
           );
         }
         player.sendUpdate();
@@ -193,6 +199,7 @@ export class GameRoom {
       Statsig.flush();
     }
     this.state = "INGAME";
+    this.playersWhenGameStarted = this.players.length;
     this.sendCurrentPlayercount();
   }
 }
