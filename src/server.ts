@@ -13,6 +13,8 @@ import express = require("express");
 
 const Statsig = require("statsig-node");
 
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
+
 console.log("Initializing Statsig");
 Statsig.initialize(
   process.env.STATSIG_SERVER_SECRET,
@@ -24,6 +26,10 @@ Statsig.initialize(
 
   app.get("/health", (req, res) => {
     res.send("I'm ok");
+  });
+
+  app.get("/socket_port", (req, res) => {
+    res.send(PORT);
   });
 
   const server = http.createServer(app);
@@ -204,7 +210,6 @@ Statsig.initialize(
   });
 
   console.log("Starting Server");
-  const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
   console.log("Starting Server Game Loop Tick");
