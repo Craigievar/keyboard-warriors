@@ -22,7 +22,6 @@ body {
 }
 
 /* Header styles */
-p,
 h1,
 h2,
 h3,
@@ -35,7 +34,7 @@ h6 {
 
 /* Paragraph styles */
 p {
-  color: #333333;
+  color: #a4a4a4;
 }
 
 /* Input styles */
