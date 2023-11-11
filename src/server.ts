@@ -106,7 +106,9 @@ Statsig.initialize(
         console.log(g.code + " vs. " + data.code);
       }
 
-      const game = games.find((g) => g.code === data.code);
+      const game = games.find(
+        (g) => g.code.toLowerCase().trim() === data.code.toLowerCase().trim()
+      );
       console.log("Found " + game?.roomId);
       if (game && game.state === "LOBBY") {
         if (player) {
