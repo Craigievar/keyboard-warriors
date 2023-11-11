@@ -75,6 +75,11 @@ const App: React.FC = () => {
     socket?.emit("join_game_any");
   };
 
+  const sendWord = (word: string) => {
+    console.log("Sending " + word);
+    socket?.emit("input", { word: word });
+  };
+
   const handleJoinGameByCode = (code: string) => {
     console.log("Joining a a game");
     socket?.emit("join_game_code", code);
@@ -101,7 +106,7 @@ const App: React.FC = () => {
           />
         );
       case "INGAME":
-        return <InGameView playerState={playerState} />;
+        return <InGameView playerState={playerState} sendWord={sendWord} />;
       default:
         return (
           <MenuView

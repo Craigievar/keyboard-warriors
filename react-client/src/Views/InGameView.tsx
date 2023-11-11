@@ -4,9 +4,10 @@ import PlayerState from "../Models/PlayerState";
 
 interface InGameViewProps {
   playerState: PlayerState | null; // Replace with your appropriate type
+  sendWord: (word: string) => void;
 }
 
-const InGameView: React.FC<InGameViewProps> = ({ playerState }) => {
+const InGameView: React.FC<InGameViewProps> = ({ playerState, sendWord }) => {
   const [inputValue, setInputValue] = useState("");
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -14,7 +15,9 @@ const InGameView: React.FC<InGameViewProps> = ({ playerState }) => {
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
       console.log("Enter key pressed");
-      // Add your logic here for what should happen when Enter is pressed
+      sendWord(inputValue);
+      setInputValue("");
+      //client side reaction
     }
   };
   return (
