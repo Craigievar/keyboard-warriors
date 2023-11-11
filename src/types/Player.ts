@@ -94,7 +94,7 @@ export class Player {
     // console.log(this.networkInputs);
     for (const s of this.networkInputs) {
       console.log(`Comparing ${s} to ${this.nextWords[0]}`);
-      if (s.toLowerCase() === this.nextWords[0].toLowerCase()) {
+      if (s.toLowerCase().trim() === this.nextWords[0].toLowerCase().trim()) {
         this.rightAnswers++;
         this.nextWords.shift();
         this.networkInputs.shift();

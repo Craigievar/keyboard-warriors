@@ -16,22 +16,7 @@ const App: React.FC = () => {
   );
   const [playerState, setPlayerState] = useState<PlayerState | null>(null);
 
-  const [lobbyState, setLobbyState] = useState<LobbyState | null>(null);
-
-  // useEffect(() => {
-  //   const newSocket = io(server);
-  //   setSocket(newSocket);
-
-  //   newSocket.on("player_state", (status: string) => {
-  //     const data: PlayerState = JSON.parse(status);
-  //     setPlayerState(data);
-  //     setGameState(data.currentGameState as "MENU" | "LOBBY" | "INGAME");
-  //   });
-
-  //   return () => {
-  //     newSocket.disconnect();
-  //   };
-  // }, []);
+  // const [lobbyState, setLobbyState] = useState<LobbyState | null>(null);
 
   const handleConnect = () => {
     const newSocket = io(server);
