@@ -14,14 +14,12 @@ const InGameView: React.FC<InGameViewProps> = ({ playerState, sendWord }) => {
   };
   const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
-      console.log("Enter key pressed");
       sendWord(inputValue);
       setInputValue("");
       //client side reaction
     }
   };
 
-  console.log(playerState);
   return (
     <div>
       $

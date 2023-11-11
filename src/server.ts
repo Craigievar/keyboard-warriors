@@ -17,10 +17,9 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 const statsigTier = process.env.STATSIG_TIER ?? "staging";
 
 console.log("Initializing Statsig");
-Statsig.initialize(
-  process.env.STATSIG_SERVER_SECRET,
-  { environment: { tier: statsigTier } } // optional, pass options here if needed
-).then(() => {
+Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
+  environment: { tier: statsigTier },
+}).then(() => {
   console.log("Statsig initialized");
   const app = express();
   app.use(cors()); // Enable CORS for all routes
@@ -116,6 +115,7 @@ Statsig.initialize(
             player.game.removePlayer(player);
           }
           game.addPlayer(player);
+          console.log(game?.roomId);
           Statsig.logEvent(
             {
               customIDs: { gameID: game.roomId, socketID: player.id },
@@ -144,14 +144,14 @@ Statsig.initialize(
 
     socket.on("join_game_any", function () {
       console.log("joining game");
-      const publicGames = games.filter((g) => g.public);
+      const publicGames = games.filter((g) => g.public && g.state === "LOBBY");
       const player = getPlayer(socket);
 
       if (player) {
         const game = randomElement(publicGames) as GameRoom;
         Statsig.logEvent(
           {
-            customIDs: { gameID: game.roomId, socketID: player.id },
+            customIDs: { socketID: player.id },
           },
           "searched_for_game"
         );
@@ -173,6 +173,7 @@ Statsig.initialize(
           if (player) {
             game.addPlayer(player);
             games.push(game);
+            console.log(game?.roomId);
 
             Statsig.logEvent(
               {

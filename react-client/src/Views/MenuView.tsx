@@ -25,28 +25,33 @@ const MenuView: React.FC<MenuViewProps> = ({
   };
   return (
     <div>
+      $
+      {!isConnected && (
+        <div>
+          <div className="loading-circle"></div>
+        </div>
+      )}
       <div>
-        <button onClick={onConnect} disabled={isConnected}>
-          Connect
-        </button>
-      </div>
-      <div>
-        <button onClick={onDisconnect} disabled={!isConnected}>
-          Disconnect
-        </button>
+        <div>
+          {isConnected && (
+            <input
+              type="text"
+              value={inputValue}
+              placeholder="Room Code"
+              onChange={handleInputChange}
+            />
+          )}
+        </div>
+        <div>
+          {isConnected && (
+            <button onClick={() => onJoinByCode(inputValue)}>
+              Join Game By Code
+            </button>
+          )}
+        </div>
       </div>
       <div>
         {isConnected && <button onClick={onJoin}>Join Random Game</button>}
-      </div>
-      <div>
-        {isConnected && (
-          <input type="text" value={inputValue} onChange={handleInputChange} />
-        )}
-        {isConnected && (
-          <button onClick={() => onJoinByCode(inputValue)}>
-            Join Game By Code
-          </button>
-        )}
       </div>
       {isConnected && <button onClick={onCreateGame}>Create Game</button>}
     </div>
