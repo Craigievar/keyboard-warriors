@@ -154,6 +154,7 @@ export class Player {
   public sendUpdate() {
     // return this.updated;
     this.message("player_state", this.getPlayerGameState());
+    this.updated = false;
   }
 
   public setUpForGame() {

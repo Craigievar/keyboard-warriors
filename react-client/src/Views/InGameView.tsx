@@ -20,19 +20,34 @@ const InGameView: React.FC<InGameViewProps> = ({ playerState, sendWord }) => {
       //client side reaction
     }
   };
+
+  console.log(playerState);
   return (
     <div>
-      <h1>Type Your Word</h1>
-      <p>
-        {playerState?.nextWords.length === 0 ? "-" : playerState?.nextWords[0]}{" "}
-      </p>{" "}
-      <input
-        type="text"
-        value={inputValue}
-        onChange={handleInputChange}
-        onKeyDown={handleKeyPress}
-      />
-      <p>{playerState?.wordsInQueue} / 20 Words in Queue (you die at 20!!!)</p>
+      $
+      {playerState?.alive ? (
+        <div>
+          <h1>Type Your Word</h1>
+          <p>
+            {playerState?.nextWords.length === 0
+              ? "-"
+              : playerState?.nextWords[0]}{" "}
+          </p>{" "}
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyPress}
+          />
+          <p>
+            {playerState?.wordsInQueue} / 20 Words in Queue (you die at 20!!!)
+          </p>
+        </div>
+      ) : (
+        <div>
+          <h1>YOU DIED</h1>
+        </div>
+      )}
       <h1>Game Info</h1>
       <p>{playerState?.playersLeft} Players Alive</p>
       <p>{playerState?.kills} Players Killed</p>

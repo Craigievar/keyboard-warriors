@@ -206,6 +206,9 @@ Statsig.initialize(
         return;
       }
       if (game.state === "INGAME") {
+        if (player.alive === false) {
+          console.log("Player is dead, can't send word");
+        }
         console.log("ingame");
         player.addInput(data.word);
       }

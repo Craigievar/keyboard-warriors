@@ -43,7 +43,9 @@ export class GameRoom {
 
   public generateWords() {
     for (const player of this.players) {
-      player.addWord(randomElement(words));
+      if (player.alive) {
+        player.addWord(randomElement(words));
+      }
     }
   }
 
