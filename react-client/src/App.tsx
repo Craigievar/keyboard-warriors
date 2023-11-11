@@ -107,7 +107,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className="view-container">
       <header>
         <h1>Keyboard Warriors</h1>
       </header>
