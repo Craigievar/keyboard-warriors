@@ -66,8 +66,8 @@ const App: React.FC = () => {
   };
 
   const handleJoinGameByCode = (code: string) => {
-    console.log("Joining a a game");
-    socket?.emit("join_game_code", code);
+    console.log("Joining a  game with code " + code);
+    socket?.emit("join_game_code", { code: code });
   };
 
   const handleStartGame = () => {

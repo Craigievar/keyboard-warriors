@@ -103,10 +103,11 @@ Statsig.initialize(
       console.log("joining game by code");
       const player = getPlayer(socket);
       for (const g of games) {
-        console.log((g as unknown as GameRoom).code);
+        console.log(g.code + " vs. " + data.code);
       }
 
       const game = games.find((g) => g.code === data.code);
+      console.log("Found " + game?.roomId);
       if (game && game.state === "LOBBY") {
         if (player) {
           if (player.game) {
