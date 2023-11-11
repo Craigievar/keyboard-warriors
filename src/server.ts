@@ -155,7 +155,7 @@ Statsig.initialize(
           },
           "searched_for_game"
         );
-        if (game) {
+        if (games.length > 0 && game) {
           Statsig.logEvent(
             {
               customIDs: { gameID: game.roomId, socketID: player.id },
