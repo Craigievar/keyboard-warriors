@@ -44,6 +44,27 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
   const socketMap = new Map<string, Player>();
   const startTime = Date.now();
 
+  app.get("/status", (req, res) => {
+    res.send(
+      JSON.stringify({
+        gameCount: games.length,
+        playerCount: socketMap.size,
+        games: games.map((g) => {
+          return {
+            state: g.state,
+            code: g.code,
+            playerCount: g.players.filter((p) => !p.isBot).length,
+            bots: g.players.filter((p) => p.isBot).length,
+            tps:
+              g.state === "INGAME"
+                ? 1000 * (g.ticks / (Date.now() - g.gameStartTime))
+                : null,
+          };
+        }),
+      })
+    );
+  });
+
   function getPlayer(socket: any): Player | undefined {
     return socketMap.get(socket.id);
   }
@@ -94,21 +115,21 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
           },
           "created_game"
         );
-        console.log(JSON.stringify(player.game?.code));
+        // console.log(JSON.stringify(player.game?.code));
       }
     });
 
     socket.on("join_game_code", function (data) {
       console.log("joining game by code");
       const player = getPlayer(socket);
-      for (const g of games) {
-        console.log(g.code + " vs. " + data.code);
-      }
+      // for (const g of games) {
+      //   console.log(g.code + " vs. " + data.code);
+      // }
 
       const game = games.find(
         (g) => g.code.toLowerCase().trim() === data.code.toLowerCase().trim()
       );
-      console.log("Found " + game?.roomId);
+      // console.log("Found " + game?.roomId);
       if (game && game.state === "LOBBY") {
         if (player) {
           if (player.game) {
@@ -181,7 +202,7 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
               },
               "created_game"
             );
-            console.log(JSON.stringify(player.game?.code));
+            // console.log(JSON.stringify(player.game?.code));
           }
         }
       }
@@ -259,10 +280,10 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
   console.log("Starting Server Game Loop Tick");
   setInterval(function () {
     // console.log(`Ticking ${games.length} games`);
-    io.emit(
-      "all_games",
-      JSON.stringify({ game_list: games.map((g) => g.code) })
-    );
+    // io.emit(
+    //   "all_games",
+    //   JSON.stringify({ game_list: games.map((g) => g.code) })
+    // );
     for (const game of games) {
       game.tick();
       if (game.shouldClean()) {

@@ -9,12 +9,10 @@ const Statsig = require("statsig-node");
 export class GameRoom {
   players: Player[];
   state: GameState;
-  loadTime: number;
   delay: number;
-  time: number;
   code: string;
   endTime: number | null;
-  lastTickTimeMs: number | null;
+  lastTickTimeMs: number | null; //todo track perf
   lastWordGeneratedMs: number | null;
   winner: Player | null;
   roomId: string;
@@ -22,13 +20,13 @@ export class GameRoom {
   numPlayersAlive: number | null;
   lastPlayerJoinOrLeave: number | null;
   playersWhenGameStarted: number | null;
+  gameStartTime: number;
+  ticks: number;
 
   constructor() {
     this.players = [];
     this.state = "LOBBY";
-    this.loadTime = 0;
     this.delay = 2000;
-    this.time = Date.now();
     this.endTime = null;
     this.lastTickTimeMs = null;
     this.lastWordGeneratedMs = null;
@@ -39,6 +37,8 @@ export class GameRoom {
     this.numPlayersAlive = null;
     this.lastPlayerJoinOrLeave = null;
     this.playersWhenGameStarted = null;
+    this.ticks = 0;
+    this.gameStartTime = 0;
   }
 
   public generateWords() {
@@ -59,6 +59,7 @@ export class GameRoom {
       // );
       target.markAttacker(attacker);
       target.addWord(word);
+      target.message("attacked", attacker.name);
     } else {
       console.log("Could not find target for attack");
     }
@@ -69,8 +70,15 @@ export class GameRoom {
       console.log(
         `Game over, winner is ${this.players.find((p) => p.alive)?.id}`
       );
-      this.state = "LOBBY";
       this.endTime = Date.now();
+      console.log(
+        `${this.ticks} ticks in ${
+          (this.endTime - this.gameStartTime) / 1000
+        } seconds or ${
+          (1000 * this.ticks) / (this.endTime - this.gameStartTime)
+        } ticks per second`
+      );
+      this.state = "LOBBY";
       for (const player of this.players) {
         player.updated = true;
         if (player.alive) {
@@ -107,6 +115,8 @@ export class GameRoom {
     if (this.state !== "INGAME") {
       return;
     }
+
+    this.ticks++;
 
     if (Date.now() - (this.lastWordGeneratedMs ?? 0) > this.delay) {
       this.generateWords();
@@ -203,9 +213,18 @@ export class GameRoom {
     player.sendUpdate();
   }
 
+  public sendPlayerDiedAlert(killer: Player | null) {
+    for (const player of this.players) {
+      if (killer == null || killer.id !== player.id) {
+        player.message("playerDied", "");
+      }
+    }
+  }
+
   public startGame() {
     for (const player of this.players) {
       player.setUpForGame();
+      player.message("screenShake", "");
 
       if (!player.isBot) {
         Statsig.logEvent(
@@ -216,6 +235,8 @@ export class GameRoom {
         );
       }
     }
+    this.ticks = 0;
+    this.gameStartTime = Date.now();
     this.state = "INGAME";
     this.playersWhenGameStarted = this.players.length;
     this.sendCurrentPlayercount();

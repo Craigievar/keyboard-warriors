@@ -68,15 +68,20 @@ export class Player {
   public checkIfDied() {
     const died = this.nextWords.length > WORDS_TO_DIE;
     if (died) {
-      console.log(
-        `${this.isBot ? "Bot" : "Player"} ${this.name} (${this.id}) died`
-      );
+      // console.log(
+      //   `${this.isBot ? "Bot" : "Player"} ${this.name} (${this.id}) died`
+      // );
       this.alive = false;
       if (this.lastAttacker) {
         this.lastAttacker.addKill();
+        this.lastAttacker.message(
+          "killedPlayer",
+          this.name ?? "Unnamed Player"
+        );
       }
       this.deathTime = Date.now();
       this.updated = true;
+      this.game?.sendPlayerDiedAlert(this.lastAttacker);
     }
   }
 
