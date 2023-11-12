@@ -1,6 +1,7 @@
 import { GameRoom } from "./GameRoom";
 import { Socket } from "socket.io";
 import { WORDS_TO_DIE } from "../config";
+import { randomUUID } from "crypto";
 import { randomWord } from "../gamelogic";
 
 // Player object. Can be in a game or not.
@@ -28,12 +29,14 @@ export class Player {
   networkInputs: string[];
   game: GameRoom | null;
   id: string;
-  socket: Socket;
-  sendMessage: (id: string, header: string, message: string) => void;
+  socket: Socket | null;
+  nextBotAttackTime: number;
+  sendMessage: ((id: string, header: string, message: string) => void) | null;
 
   constructor(
-    socket: Socket,
-    messageFn: (id: string, header: string, message: string) => void
+    socket: Socket | null,
+    messageFn: ((id: string, header: string, message: string) => void) | null,
+    isBot: boolean
   ) {
     this.name = "";
     this.alive = true;
@@ -55,15 +58,19 @@ export class Player {
     this.updated = false;
     this.networkInputs = [];
     this.game = null;
-    this.id = socket.id;
+    this.id = socket?.id ?? randomUUID();
     this.socket = socket;
     this.sendMessage = messageFn;
+    this.isBot = isBot;
+    this.nextBotAttackTime = 0;
   }
 
   public checkIfDied() {
     const died = this.nextWords.length > WORDS_TO_DIE;
     if (died) {
-      console.log(`Player ${this.name} (${this.id}) died`);
+      console.log(
+        `${this.isBot ? "Bot" : "Player"} ${this.name} (${this.id}) died`
+      );
       this.alive = false;
       if (this.lastAttacker) {
         this.lastAttacker.addKill();
@@ -86,26 +93,33 @@ export class Player {
     attacker.lastTarget = this;
   }
 
+  public handleCorrectAnswer() {
+    this.rightAnswers++;
+    this.game?.sendAttack(this, this.nextWords[0]);
+    this.nextWords.shift();
+    this.networkInputs.shift();
+  }
+
+  public handleWrongAnswer() {
+    this.wrongAnswers++;
+    this.nextWords.shift();
+    this.networkInputs.shift();
+    this.addWord(randomWord());
+    this.addWord(randomWord());
+  }
+
   public processNetworkInputs() {
     // console.log("processing inputs");
-    if (!this.game || !this.alive) {
+    if (!this.game || !this.alive || this.isBot) {
       return;
     }
     // console.log(this.networkInputs);
     for (const s of this.networkInputs) {
-      console.log(`Comparing ${s} to ${this.nextWords[0]}`);
+      // console.log(`Comparing ${s} to ${this.nextWords[0]}`);
       if (s.toLowerCase().trim() === this.nextWords[0].toLowerCase().trim()) {
-        this.rightAnswers++;
-        this.nextWords.shift();
-        this.networkInputs.shift();
-        this.game.sendAttack(this, s);
+        this.handleCorrectAnswer();
       } else {
-        this.wrongAnswers++;
-        this.nextWords.shift();
-
-        this.networkInputs.shift();
-        this.addWord(randomWord());
-        this.addWord(randomWord());
+        this.handleWrongAnswer();
       }
       this.prevWords.push(s);
       this.updated = true;
@@ -116,7 +130,6 @@ export class Player {
     // doesn't count as an update, since we update when
     // we process on the next tick
     this.networkInputs.push(word);
-    console.log(this.networkInputs);
   }
 
   public addWord(word: string) {
@@ -126,7 +139,7 @@ export class Player {
   }
 
   public hasUpdate(): boolean {
-    return this.updated;
+    return this.updated && !this.isBot;
   }
 
   public getPlayerGameState() {
@@ -148,11 +161,36 @@ export class Player {
   }
 
   public message(header: string, message: string) {
-    this.sendMessage(this.id, header, message);
+    if (!this.isBot && this.sendMessage !== null) {
+      this.sendMessage(this.id, header, message);
+    }
+  }
+
+  public setNextAttackTimer() {
+    // todo - handle bot difficulty etc.
+    const max = 5000; //5 seconds
+    const min = 1000; //1 second
+    this.nextBotAttackTime =
+      Date.now() + Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  public botUpdate() {
+    if (!this.alive) {
+      return;
+    }
+
+    if (Date.now() >= this.nextBotAttackTime) {
+      this.handleCorrectAnswer();
+      this.setNextAttackTimer();
+    }
   }
 
   public sendUpdate() {
     // return this.updated;
+    if (this.isBot) {
+      return;
+    }
+
     this.message("player_state", this.getPlayerGameState());
     this.updated = false;
   }
@@ -172,6 +210,13 @@ export class Player {
     this.timesAttacked = 0;
     this.updated = true;
     this.networkInputs = [];
+
+    if (this.isBot) {
+      const max = 5000;
+      const min = 1000; //1 second
+      this.nextBotAttackTime =
+        Date.now() + Math.floor(Math.random() * (max - min)) + min;
+    }
   }
 }
 

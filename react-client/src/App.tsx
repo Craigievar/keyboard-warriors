@@ -7,8 +7,8 @@ import LobbyView from "./Views/LobbyView";
 import MenuView from "./Views/MenuView";
 import PlayerState from "./Models/PlayerState";
 
-// const server = "http://localhost:3000";
-const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com/";
+const server = "http://localhost:3000";
+// const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com/";
 const App: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [gameState, setGameState] = useState<"MENU" | "LOBBY" | "INGAME">(
@@ -73,6 +73,14 @@ const App: React.FC = () => {
     socket?.emit("leave_game");
   };
 
+  const handleAddBot = () => {
+    socket?.emit("add_bot");
+  };
+
+  const onRemoveBots = () => {
+    socket?.emit("remove_bots");
+  };
+
   const renderView = () => {
     const isConnected = socket !== null && socket?.connected;
     switch (gameState) {
@@ -82,6 +90,8 @@ const App: React.FC = () => {
             playerState={playerState}
             onStartGame={handleStartGame}
             onLeaveGame={handleLeaveGame}
+            onAddBot={handleAddBot}
+            onRemoveBots={onRemoveBots}
           />
         );
       case "INGAME":

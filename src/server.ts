@@ -54,7 +54,7 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
 
   io.on("connection", (socket) => {
     console.log("New client connected");
-    const player = new Player(socket, sendSocketMessage);
+    const player = new Player(socket, sendSocketMessage, false);
     player.sendUpdate();
     socketMap.set(socket.id, player);
 
@@ -70,7 +70,7 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
       console.log("disconnecting player");
       const player = getPlayer(socket);
       if (player && player.game) {
-        io.to(player.socket.id).emit("current_game_code", "");
+        player.message("current_game_code", "");
         player.game.removePlayer(player);
       }
 
@@ -187,10 +187,30 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
       }
     });
 
-    socket.on("start_game", function () {
-      console.log("starting game");
+    socket.on("add_bot", function () {
       const player = getPlayer(socket);
       if (player && player.game && player.game.state === "LOBBY") {
+        player.game.addBot();
+      }
+    });
+
+    socket.on("remove_bots", function () {
+      const player = getPlayer(socket);
+      if (player && player.game && player.game.state === "LOBBY") {
+        for (const bot of player.game.players.filter((p) => p.isBot)) {
+          player.game.removePlayer(bot);
+        }
+      }
+    });
+
+    socket.on("start_game", function () {
+      const player = getPlayer(socket);
+      if (
+        player &&
+        player.game &&
+        player.game.state === "LOBBY" &&
+        player.game.players.length > 1
+      ) {
         player.game.startGame();
       }
     });
@@ -210,7 +230,6 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
         if (player.alive === false) {
           console.log("Player is dead, can't send word");
         }
-        console.log("ingame");
         player.addInput(data.word);
       }
     });

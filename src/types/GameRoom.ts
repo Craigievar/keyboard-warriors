@@ -49,16 +49,14 @@ export class GameRoom {
     }
   }
 
-  public reset() {}
-
   public sendAttack(attacker: Player, word: string) {
     const target = randomElement(
       this.players.filter((p) => p.alive && p.id !== attacker.id)
     ) as Player;
     if (target) {
-      console.log(
-        `Sending attack from ${attacker.id} (${attacker.nextWords.length}) to ${target.id} (${target.nextWords.length})`
-      );
+      // console.log(
+      //   `Sending attack from ${attacker.id} (${attacker.nextWords.length}) to ${target.id} (${target.nextWords.length})`
+      // );
       target.markAttacker(attacker);
       target.addWord(word);
     } else {
@@ -78,16 +76,18 @@ export class GameRoom {
         if (player.alive) {
           this.winner = player;
           player.won = true;
-          Statsig.logEvent(
-            {
-              customIDs: { gameID: this.roomId, socketID: player.id },
-            },
-            "won_game",
-            null,
-            {
-              total_players: this.playersWhenGameStarted,
-            }
-          );
+          if (!player.isBot) {
+            Statsig.logEvent(
+              {
+                customIDs: { gameID: this.roomId, socketID: player.id },
+              },
+              "won_game",
+              null,
+              {
+                total_players: this.playersWhenGameStarted,
+              }
+            );
+          }
         }
         player.sendUpdate();
       }
@@ -107,14 +107,19 @@ export class GameRoom {
     if (this.state !== "INGAME") {
       return;
     }
+
     if (Date.now() - (this.lastWordGeneratedMs ?? 0) > this.delay) {
       this.generateWords();
       this.lastWordGeneratedMs = Date.now();
-      console.log(`${this.numPlayersAlive} players alive`);
+      // console.log(`${this.numPlayersAlive} players alive`);
     }
 
     for (const player of this.players) {
-      player.processNetworkInputs();
+      if (player.isBot) {
+        player.botUpdate();
+      } else {
+        player.processNetworkInputs();
+      }
     }
 
     this.calculatePlayersAlive();
@@ -139,8 +144,7 @@ export class GameRoom {
     const isStale =
       this.lastPlayerJoinOrLeave != null &&
       Date.now() - this.lastPlayerJoinOrLeave > 1000 * 300;
-    return this.players.length === 0 || isStale;
-    // or last action a long time ago.
+    return this.players.filter((p) => !p.isBot).length === 0 || isStale;
   }
 
   public sendCurrentPlayercount() {
@@ -149,8 +153,20 @@ export class GameRoom {
     }
   }
 
+  public addBot() {
+    if (this.players.length < 100) {
+      const bot = new Player(null, null, true);
+      bot.game = this;
+      this.players.push(bot);
+      this.sendCurrentPlayercount();
+    }
+  }
+
   public addPlayer(player: Player) {
-    if (this.players.some((p) => p.id === player.id)) {
+    if (
+      this.players.some((p) => p.id === player.id) ||
+      this.players.length >= 100
+    ) {
       return;
     }
     this.players.push(player);
@@ -170,10 +186,13 @@ export class GameRoom {
   public removePlayer(player: Player) {
     this.players = this.players.filter((p) => p.id !== player.id);
     player.game = null;
-
     this.lastPlayerJoinOrLeave = Date.now();
+    this.sendCurrentPlayercount();
 
-    console.log("sending current game code");
+    if (player.isBot) {
+      return;
+    }
+
     player.message("current_game_code", "    ");
     Statsig.logEvent(
       {
@@ -181,7 +200,6 @@ export class GameRoom {
       },
       "left_game"
     );
-    this.sendCurrentPlayercount();
     player.sendUpdate();
   }
 
@@ -189,13 +207,14 @@ export class GameRoom {
     for (const player of this.players) {
       player.setUpForGame();
 
-      Statsig.logEvent(
-        {
-          customIDs: { gameID: this.roomId, socketID: player.id },
-        },
-        "game_start"
-      );
-      Statsig.flush();
+      if (!player.isBot) {
+        Statsig.logEvent(
+          {
+            customIDs: { gameID: this.roomId, socketID: player.id },
+          },
+          "game_start"
+        );
+      }
     }
     this.state = "INGAME";
     this.playersWhenGameStarted = this.players.length;
