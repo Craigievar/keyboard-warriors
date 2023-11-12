@@ -5,9 +5,14 @@ import PlayerState from "../Models/PlayerState";
 interface InGameViewProps {
   playerState: PlayerState | null; // Replace with your appropriate type
   sendWord: (word: string) => void;
+  playerRecentlyDied: boolean;
 }
 
-const InGameView: React.FC<InGameViewProps> = ({ playerState, sendWord }) => {
+const InGameView: React.FC<InGameViewProps> = ({
+  playerState,
+  sendWord,
+  playerRecentlyDied,
+}) => {
   const [inputValue, setInputValue] = useState("");
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -47,7 +52,9 @@ const InGameView: React.FC<InGameViewProps> = ({ playerState, sendWord }) => {
         </div>
       )}
       <h1>Game Info</h1>
-      <p>{playerState?.playersLeft} Players Alive</p>
+      <div className={playerRecentlyDied ? "flashing-text" : ""}>
+        <p>{playerState?.playersLeft} Players Alive</p>
+      </div>
       <p>{playerState?.kills} Players Killed</p>
       <p>{playerState?.rightAnswers} Correct Answers</p>
       <p>{playerState?.wrongAnswers} Incorrect Answers</p>

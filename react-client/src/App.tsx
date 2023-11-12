@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
+import AttackedData from "./Models/AttackedData";
 import InGameView from "./Views/InGameView";
+import KilledPlayerData from "./Models/KilledPlayerData";
 import LobbyState from "./Models/LobbyState";
 import LobbyView from "./Views/LobbyView";
 import MenuView from "./Views/MenuView";
 import PlayerState from "./Models/PlayerState";
+import PopUpMessage from "./Components/PopUpMessage";
 
 const server = "http://localhost:3000";
 // const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com/";
@@ -15,6 +18,13 @@ const App: React.FC = () => {
     "MENU"
   );
   const [playerState, setPlayerState] = useState<PlayerState | null>(null);
+  const [popupMessage, setPopupMessage] = useState<string>("");
+  const [isShaking, setIsShaking] = useState(false);
+  const [playerRecentlyDied, setPlayerRecentlyDied] = useState(false);
+
+  const playSound = (soundFile: string): void => {
+    new Audio(soundFile).play();
+  };
 
   const handleConnect = () => {
     const newSocket = io(server);
@@ -35,6 +45,33 @@ const App: React.FC = () => {
       console.log(`Update from server ${new Date().toISOString()}`);
       setPlayerState(data);
       setGameState(data.currentGameState as "MENU" | "LOBBY" | "INGAME");
+    });
+
+    newSocket.on("attacked", (data: AttackedData) => {
+      setPopupMessage(`Attacked by ${data.attackerName ?? "Unknown"}`);
+      console.log("attacked msg");
+      // playSound("path/to/attack-sound.mp3");
+    });
+
+    newSocket.on("killedPlayer", (data: KilledPlayerData) => {
+      setPopupMessage(`Killed ${data.victimName}`);
+      console.log("killed player msg");
+      // playSound("path/to/killed-sound.mp3");
+    });
+
+    newSocket.on("screenShake", () => {
+      console.log("screen shake msg");
+      setIsShaking(true);
+      // playSound("path/to/shake-sound.mp3");
+      setTimeout(() => setIsShaking(false), 1000); // Stop shaking after 1 second
+    });
+
+    newSocket.on("playerDied", () => {
+      console.log("player died msg");
+      // Implement flashing text logic
+      setPlayerRecentlyDied(true);
+      setTimeout(() => setPlayerRecentlyDied(false), 300);
+      // playSound("path/to/death-sound.mp3");
     });
 
     setSocket(newSocket);
@@ -95,7 +132,21 @@ const App: React.FC = () => {
           />
         );
       case "INGAME":
-        return <InGameView playerState={playerState} sendWord={sendWord} />;
+        return (
+          <div>
+            {popupMessage && (
+              <PopUpMessage
+                message={popupMessage}
+                onDisappear={() => setPopupMessage("")}
+              />
+            )}
+            <InGameView
+              playerState={playerState}
+              sendWord={sendWord}
+              playerRecentlyDied={playerRecentlyDied}
+            />
+          </div>
+        );
       default:
         return (
           <MenuView
@@ -115,11 +166,14 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="view-container">
-      <header>
-        <h1>Keyboard Warriors</h1>
-      </header>
-      {renderView()}
+    <div className={`${isShaking ? "shake" : ""}`}>
+      {" "}
+      <div className="view-container">
+        <header>
+          <h1>Keyboard Warriors</h1>
+        </header>
+        {renderView()}
+      </div>
     </div>
   );
 };
