@@ -46,6 +46,9 @@ function createSocketConnection(index) {
     socket.on("connect", function () {
         console.log("Connection ".concat(index, " opened"));
         socket.emit("join_game_any");
+        setTimeout(function () {
+            socket.emit("start_game");
+        }, 1000);
         setInterval(function () {
             if (Math.random() < 0.1) {
                 socket.emit("start_game");
@@ -54,7 +57,7 @@ function createSocketConnection(index) {
         setInterval(function () {
             var word = "my word";
             socket.emit("input", { word: word });
-        }, 3000); // Every 3 seconds
+        }, 6000 * Math.random());
     });
     socket.on("message", function (message) {
         console.log("Received message from connection ".concat(index, ": ").concat(message));
@@ -76,28 +79,19 @@ function createConnections() {
                     j = 0;
                     _a.label = 1;
                 case 1:
-                    if (!(j < NUM_GAMES)) return [3 /*break*/, 8];
-                    i = 0;
-                    _a.label = 2;
+                    if (!(j < NUM_GAMES)) return [3 /*break*/, 4];
+                    for (i = 0; i < NUM_CONNECTIONS_PER_GAME; i++) {
+                        console.log("Creating client");
+                        createSocketConnection(i);
+                    }
+                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 3); })];
                 case 2:
-                    if (!(i < NUM_CONNECTIONS_PER_GAME)) return [3 /*break*/, 5];
-                    console.log("Creating client");
-                    createSocketConnection(i);
-                    return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 10); })];
-                case 3:
-                    _a.sent(); // Wait for 0.25 seconds
-                    _a.label = 4;
-                case 4:
-                    i++;
-                    return [3 /*break*/, 2];
-                case 5: return [4 /*yield*/, new Promise(function (resolve) { return setTimeout(resolve, 1000); })];
-                case 6:
                     _a.sent();
-                    _a.label = 7;
-                case 7:
+                    _a.label = 3;
+                case 3:
                     j++;
                     return [3 /*break*/, 1];
-                case 8: return [2 /*return*/];
+                case 4: return [2 /*return*/];
             }
         });
     });

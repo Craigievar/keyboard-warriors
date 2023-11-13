@@ -10,8 +10,8 @@ import MenuView from "./Views/MenuView";
 import PlayerState from "./Models/PlayerState";
 import PopUpMessage from "./Components/PopUpMessage";
 
-// const server = "http://localhost:3000";
-const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com";
+const server = "http://localhost:3000";
+// const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com";
 const App: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [gameState, setGameState] = useState<"MENU" | "LOBBY" | "INGAME">(

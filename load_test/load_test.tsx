@@ -11,6 +11,9 @@ function createSocketConnection(index: number) {
   socket.on("connect", () => {
     console.log(`Connection ${index} opened`);
     socket.emit("join_game_any");
+    setTimeout(() => {
+      socket.emit("start_game");
+    }, 1000);
 
     setInterval(() => {
       if (Math.random() < 0.1) {
@@ -43,9 +46,8 @@ async function createConnections() {
     for (let i = 0; i < NUM_CONNECTIONS_PER_GAME; i++) {
       console.log("Creating client");
       createSocketConnection(i);
-      await new Promise((resolve) => setTimeout(resolve, 10)); // Wait for 0.25 seconds
     }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 3));
   }
 }
 

@@ -44,6 +44,20 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
   const socketMap = new Map<string, Player>();
   const startTime = Date.now();
 
+  function serverTick() {
+    const nextTick = Date.now() + 1000 / 30;
+
+    for (const game of games) {
+      game.tick();
+      if (game.shouldClean()) {
+        game.clean();
+        games = games.filter((g) => game.roomId !== g.roomId);
+      }
+    }
+
+    setTimeout(serverTick, nextTick > Date.now() ? nextTick - Date.now() : 0);
+  }
+
   app.get("/status", (req, res) => {
     res.send(
       JSON.stringify({
@@ -255,10 +269,10 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
       }
     });
 
-    const intervalId = setInterval(() => {
-      const secondsSinceStart = Math.floor((Date.now() - startTime) / 1000);
-      socket.emit("time", secondsSinceStart);
-    }, 1000);
+    // const intervalId = setInterval(() => {
+    //   const secondsSinceStart = Math.floor((Date.now() - startTime) / 1000);
+    //   socket.emit("time", secondsSinceStart);
+    // }, 1000);
 
     socket.on("disconnect", function () {
       console.log("disconnecting player");
@@ -268,9 +282,8 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
         player.game.removePlayer(player);
       }
       socketMap.delete(socket.id);
-      //todo maybe rese tplayer data
 
-      clearInterval(intervalId);
+      // clearInterval(intervalId);
     });
   });
 
@@ -278,18 +291,6 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
   server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
   console.log("Starting Server Game Loop Tick");
-  setInterval(function () {
-    // console.log(`Ticking ${games.length} games`);
-    // io.emit(
-    //   "all_games",
-    //   JSON.stringify({ game_list: games.map((g) => g.code) })
-    // );
-    for (const game of games) {
-      game.tick();
-      if (game.shouldClean()) {
-        game.clean();
-        games = games.filter((g) => game.roomId !== g.roomId);
-      }
-    }
-  }, 1000 / 30);
+
+  serverTick();
 });
