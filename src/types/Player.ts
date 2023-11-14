@@ -162,6 +162,12 @@ export class Player {
       //todo factor these into separate websocket calls
       playersInLobby: this.game?.players.length,
       lobbyCode: this.game?.code,
+      playerStates: this.game?.players.map((p) => {
+        return {
+          words: p.nextWords.length,
+          alive: p.alive,
+        };
+      }),
     });
   }
 

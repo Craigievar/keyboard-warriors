@@ -11,5 +11,9 @@ interface PlayerState {
   won: boolean | null;
   lobbyCode: string;
   playersInLobby: string;
+  players: {
+    words: number;
+    alive: number;
+  }[];
 }
 export default PlayerState;
