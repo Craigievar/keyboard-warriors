@@ -96,6 +96,7 @@ export class GameRoom {
               null,
               {
                 total_players: this.playersWhenGameStarted,
+                winner_name: player.name,
               }
             );
           }
@@ -186,13 +187,14 @@ export class GameRoom {
     player.game = this;
     this.sendCurrentPlayercount();
     player.sendUpdate();
-    Statsig.logEvent(
-      {
-        customIDs: { gameID: this.roomId, socketID: player.id },
-      },
-      "joined_game"
-    );
-    Statsig.flush();
+    if (!player.isBot) {
+      Statsig.logEvent(
+        {
+          customIDs: { gameID: this.roomId, socketID: player.id },
+        },
+        "joined_game"
+      );
+    }
     this.lastPlayerJoinOrLeave = Date.now();
   }
 
