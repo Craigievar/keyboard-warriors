@@ -108,8 +108,6 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
         player.message("current_game_code", "");
         player.game.removePlayer(player);
       }
-
-      //todo
     });
 
     socket.on("create_game", function () {
@@ -129,21 +127,23 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
           },
           "created_game"
         );
-        // console.log(JSON.stringify(player.game?.code));
+      }
+    });
+
+    socket.on("set_name", function (name: string) {
+      const player = getPlayer(socket);
+      if (player) {
+        player.name = name.slice(0, 16);
       }
     });
 
     socket.on("join_game_code", function (data) {
       console.log("joining game by code");
       const player = getPlayer(socket);
-      // for (const g of games) {
-      //   console.log(g.code + " vs. " + data.code);
-      // }
 
       const game = games.find(
         (g) => g.code.toLowerCase().trim() === data.code.toLowerCase().trim()
       );
-      // console.log("Found " + game?.roomId);
       if (game && game.state === "LOBBY") {
         if (player) {
           if (player.game) {
@@ -269,11 +269,6 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
       }
     });
 
-    // const intervalId = setInterval(() => {
-    //   const secondsSinceStart = Math.floor((Date.now() - startTime) / 1000);
-    //   socket.emit("time", secondsSinceStart);
-    // }, 1000);
-
     socket.on("disconnect", function () {
       console.log("disconnecting player");
       const player = getPlayer(socket);
@@ -282,8 +277,6 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
         player.game.removePlayer(player);
       }
       socketMap.delete(socket.id);
-
-      // clearInterval(intervalId);
     });
   });
 

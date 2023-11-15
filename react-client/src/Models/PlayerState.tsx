@@ -1,4 +1,5 @@
 interface PlayerState {
+  id: string;
   nextWords: string[];
   wordsInQueue: number;
   kills: number;
@@ -11,9 +12,10 @@ interface PlayerState {
   won: boolean | null;
   lobbyCode: string;
   playersInLobby: string;
-  players: {
+  playerStates: {
+    id: string;
     words: number;
-    alive: number;
+    alive: boolean;
   }[];
 }
 export default PlayerState;

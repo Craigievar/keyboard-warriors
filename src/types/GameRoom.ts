@@ -45,6 +45,9 @@ export class GameRoom {
     for (const player of this.players) {
       if (player.alive) {
         player.addWord(randomElement(words));
+      } else {
+        // just so player gets sent data on "tick"
+        player.updated = true;
       }
     }
   }
@@ -59,7 +62,7 @@ export class GameRoom {
       // );
       target.markAttacker(attacker);
       target.addWord(word);
-      target.message("attacked", attacker.name);
+      target.message("attacked", { attackerName: attacker.name });
     } else {
       console.log("Could not find target for attack");
     }
@@ -203,7 +206,7 @@ export class GameRoom {
       return;
     }
 
-    player.message("current_game_code", "    ");
+    player.message("current_game_code", "");
     Statsig.logEvent(
       {
         customIDs: { gameID: this.roomId, socketID: player.id },

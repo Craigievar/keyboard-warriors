@@ -75,11 +75,11 @@ button:hover {
 }
 
 @keyframes spin {
-  0% {
+  from {
     transform: rotate(0deg);
   }
-  100% {
-    transform: rotate(360deg);
+  to {
+    transform: rotate(270deg);
   }
 }
 
@@ -99,7 +99,7 @@ button:hover {
 
 .popup-message {
   position: fixed; /* or absolute, depending on the requirement */
-  top: 50%; /* Center vertically */
+  top: 80%; /* Center vertically */
   left: 50%; /* Center horizontally */
   transform: translate(-50%, -50%);
   background-color: black;
@@ -112,11 +112,11 @@ button:hover {
 
 @keyframes driftUp {
   0% {
-    top: 50%;
+    top: 40%;
     opacity: 1;
   }
   100% {
-    top: 40%; /* Adjust the drifting distance as needed */
+    top: 30%; /* Adjust the drifting distance as needed */
     opacity: 0;
   }
 }
@@ -160,4 +160,36 @@ button:hover {
 .shake {
   animation: shake 0.1s;
   animation-iteration-count: infinite;
+}
+
+@keyframes deathAnimation {
+  to {
+    transform: rotate(180deg);
+    opacity: 0.5;
+  }
+}
+
+.dead-keyboard {
+  animation: deathAnimation 1s forwards;
+}
+
+.styledBox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.keyboardView {
+  flex: 0 0 20%; /* Adjust this value if you add margins */
+  /* Add margin if needed, e.g., margin: 5px; */
+  /* Additional styling for KeyboardView */
+}
+
+.single-spin {
+  animation: spin 2s linear 1; /* 2s duration, linear timing, run once */
+}
+
+.continuous-spin {
+  animation: spin 2s linear infinite;
 }

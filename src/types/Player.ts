@@ -1,8 +1,9 @@
+import { generateRandomName, randomWord } from "../gamelogic";
+
 import { GameRoom } from "./GameRoom";
 import { Socket } from "socket.io";
 import { WORDS_TO_DIE } from "../config";
 import { randomUUID } from "crypto";
-import { randomWord } from "../gamelogic";
 
 // Player object. Can be in a game or not.
 // Interacts with the game it's in for game loop
@@ -38,7 +39,7 @@ export class Player {
     messageFn: ((id: string, header: string, message: string) => void) | null,
     isBot: boolean
   ) {
-    this.name = "";
+    this.name = generateRandomName();
     this.alive = true;
     this.lastAttacker = null;
     this.lastTarget = null;
@@ -149,6 +150,7 @@ export class Player {
 
   public getPlayerGameState() {
     return JSON.stringify({
+      id: this.id,
       nextWords: this.nextWords.slice(0, 4),
       wordsInQueue: this.nextWords.length,
       kills: this.kills,
@@ -164,6 +166,7 @@ export class Player {
       lobbyCode: this.game?.code,
       playerStates: this.game?.players.map((p) => {
         return {
+          id: p.id,
           words: p.nextWords.length,
           alive: p.alive,
         };
@@ -171,7 +174,7 @@ export class Player {
     });
   }
 
-  public message(header: string, message: string) {
+  public message(header: string, message: any) {
     if (!this.isBot && this.sendMessage !== null) {
       this.sendMessage(this.id, header, message);
     }

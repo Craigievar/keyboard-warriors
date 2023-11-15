@@ -4,33 +4,50 @@ import { connected } from "process";
 
 interface MenuViewProps {
   isConnected: boolean;
-  onConnect: () => void;
   onJoin: () => void;
   onJoinByCode: (code: string) => void;
-  onDisconnect: () => void;
   onCreateGame: () => void;
+  onSetName: (name: string) => void;
 }
 
 const MenuView: React.FC<MenuViewProps> = ({
-  onConnect,
   isConnected,
-  onDisconnect,
   onJoin,
   onJoinByCode,
   onCreateGame,
+  onSetName,
 }: MenuViewProps) => {
   const [inputValue, setInputValue] = useState("");
+  const [nameValue, setNameValue] = useState("");
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
+  const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNameValue(event.target.value);
+  };
+
   return (
     <div>
-      $
       {!isConnected && (
         <div>
           <div className="loading-circle"></div>
         </div>
       )}
+      <div>
+        {isConnected && (
+          <input
+            type="text"
+            value={nameValue}
+            placeholder="Set Yoru Name"
+            onChange={handleNameChange}
+          />
+        )}
+      </div>
+      <div>
+        {isConnected && (
+          <button onClick={() => onSetName(nameValue)}>Set Name</button>
+        )}
+      </div>
       <div>
         <div>
           {isConnected && (

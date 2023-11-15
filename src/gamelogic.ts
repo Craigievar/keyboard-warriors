@@ -17,3 +17,52 @@ export function generateRandomString(length: number) {
   }
   return result;
 }
+
+export function generateRandomName() {
+  let adjectives = [
+    "Angry",
+    "Curious",
+    "Happy",
+    "Sad",
+    "Excited",
+    "Sleepy",
+    "Energetic",
+    "Lazy",
+    "Brave",
+    "Calm",
+    "Amazing",
+    "Spectacular",
+    "Sleepy",
+    "Evil",
+  ];
+  const nouns = [
+    "Beaver",
+    "Echidna",
+    "Cat",
+    "Dog",
+    "Elephant",
+    "Giraffe",
+    "Kangaroo",
+    "Lion",
+    "Monkey",
+    "Panda",
+    "Echidna",
+    "Platypus",
+  ];
+
+  const animal = randomElement(nouns);
+  if (animal === "Echidna") {
+    adjectives = [
+      "Happy",
+      "Excited",
+      "Energetic",
+      "Brave",
+      "Amazing",
+      "Spectacular",
+    ];
+  }
+  if (animal === "Platypus") {
+    adjectives = ["Angry", "Sad", "Evil"];
+  }
+  return `${randomElement(adjectives)} ${animal}`;
+}

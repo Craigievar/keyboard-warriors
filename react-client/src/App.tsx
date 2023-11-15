@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import io, { Socket } from "socket.io-client";
 
 import AttackedData from "./Models/AttackedData";
@@ -21,6 +21,12 @@ const App: React.FC = () => {
   const [popupMessage, setPopupMessage] = useState<string>("");
   const [isShaking, setIsShaking] = useState(false);
   const [playerRecentlyDied, setPlayerRecentlyDied] = useState(false);
+  const [removedWords, setRemovedWords] = useState([] as string[]);
+
+  const removedWordsRef = useRef(removedWords);
+  useEffect(() => {
+    removedWordsRef.current = removedWords;
+  }, [removedWords]);
 
   const playSound = (soundFile: string): void => {
     new Audio(soundFile).play();
@@ -42,7 +48,45 @@ const App: React.FC = () => {
 
     newSocket.on("player_state", (status: string) => {
       const data: PlayerState = JSON.parse(status);
-      console.log(`Update from server ${new Date().toISOString()}`);
+      // console.log(`Update from server ${new Date().toISOString()}`);
+      const rw = removedWordsRef.current;
+      console.log(
+        JSON.stringify({
+          removeWords: rw,
+          remoteWords: data.nextWords,
+        })
+      );
+
+      /*
+       {"removeWords":["vancouver","loaded"],"remoteWords":["loaded","centered","becoming","table"]}
+
+      */
+      if (data.nextWords.some((w) => rw.includes(w))) {
+        console.log("Removing words");
+        let i = 0;
+        let j = 0;
+        while (i < rw.length) {
+          if (rw[i] === data.nextWords[0]) {
+            while (
+              j < data.nextWords.length &&
+              rw[i + j] === data.nextWords[j]
+            ) {
+              j++;
+            }
+            break;
+          }
+          i++;
+        }
+        JSON.stringify({
+          removeWords: rw,
+          remoteWords: data.nextWords,
+          filteredWords: data.nextWords.slice(j),
+        });
+        data.nextWords = data.nextWords.slice(j);
+      } else {
+        setRemovedWords([]);
+      }
+
       setPlayerState(data);
       setGameState(data.currentGameState as "MENU" | "LOBBY" | "INGAME");
     });
@@ -118,6 +162,26 @@ const App: React.FC = () => {
     socket?.emit("remove_bots");
   };
 
+  const onSetName = (name: string) => {
+    socket?.emit("set_name", { name: name });
+  };
+
+  const onRemoveWordLocally = (answerWasCorrect: boolean) => {
+    if (playerState !== null && playerState.nextWords.length > 0) {
+      setRemovedWords(
+        removedWords.concat([playerState.nextWords[0].trim().toLowerCase()])
+      );
+    }
+
+    if (playerState !== null) {
+      setPlayerState({
+        ...playerState,
+        nextWords: playerState.nextWords.slice(1),
+        wordsInQueue: playerState.wordsInQueue + (answerWasCorrect ? -1 : 1),
+      });
+    }
+  };
+
   const renderView = () => {
     const isConnected = socket !== null && socket?.connected;
     switch (gameState) {
@@ -144,6 +208,7 @@ const App: React.FC = () => {
               playerState={playerState}
               sendWord={sendWord}
               playerRecentlyDied={playerRecentlyDied}
+              removeWordLocally={onRemoveWordLocally}
             />
           </div>
         );
@@ -151,10 +216,9 @@ const App: React.FC = () => {
         return (
           <MenuView
             isConnected={isConnected}
-            onConnect={handleConnect}
             onJoinByCode={handleJoinGameByCode}
             onJoin={handleJoinGame}
-            onDisconnect={handleDisconnect}
+            onSetName={onSetName}
             onCreateGame={handleCreateGame}
           />
         );
