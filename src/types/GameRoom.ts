@@ -187,14 +187,6 @@ export class GameRoom {
     player.game = this;
     this.sendCurrentPlayercount();
     player.sendUpdate();
-    if (!player.isBot) {
-      Statsig.logEvent(
-        {
-          customIDs: { gameID: this.roomId, socketID: player.id },
-        },
-        "joined_game"
-      );
-    }
     this.lastPlayerJoinOrLeave = Date.now();
   }
 
