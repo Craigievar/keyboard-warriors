@@ -38,7 +38,7 @@ const MenuView: React.FC<MenuViewProps> = ({
           <input
             type="text"
             value={nameValue}
-            placeholder="Set Yoru Name"
+            placeholder="Set Your Name"
             onChange={handleNameChange}
           />
         )}

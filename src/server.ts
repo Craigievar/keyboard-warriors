@@ -130,10 +130,10 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
       }
     });
 
-    socket.on("set_name", function (name: string) {
+    socket.on("set_name", function (data) {
       const player = getPlayer(socket);
       if (player) {
-        player.name = name.slice(0, 16);
+        player.name = data.name.slice(0, 16);
       }
     });
 

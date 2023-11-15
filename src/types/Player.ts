@@ -151,6 +151,7 @@ export class Player {
   public getPlayerGameState() {
     return JSON.stringify({
       id: this.id,
+      name: this.name,
       nextWords: this.nextWords.slice(0, 4),
       wordsInQueue: this.nextWords.length,
       kills: this.kills,
@@ -169,6 +170,7 @@ export class Player {
           id: p.id,
           words: p.nextWords.length,
           alive: p.alive,
+          name: p.name,
         };
       }),
     });

@@ -12,18 +12,11 @@ interface InGameViewProps {
   removeWordLocally: (answerWasCorrect: boolean) => void;
 }
 
-function usePrevious(value: any) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
 interface KeyboardViewProps {
   words: number;
   alive: boolean;
   size: number;
+  name: string;
 }
 
 function interpolateColor(words: number) {
@@ -40,14 +33,31 @@ function interpolateColor(words: number) {
   return `rgb(${redComponent}, 0, ${blueComponent})`;
 }
 
-const KeyboardView: React.FC<KeyboardViewProps> = ({ words, alive, size }) => {
+const KeyboardView: React.FC<KeyboardViewProps> = ({
+  words,
+  alive,
+  size,
+  name,
+}) => {
   const keyboardColor = alive ? interpolateColor(words) : "grey";
-  // const className = alive ? "" : "dead-keyboard continuous-spin";
 
-  return alive ? (
-    <Keyboard style={{ color: keyboardColor, fontSize: size }}></Keyboard>
-  ) : (
-    <Dangerous style={{ color: keyboardColor, fontSize: size }}></Dangerous>
+  return (
+    <div
+      style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
+      <div style={{ margin: 0 }}>
+        {alive ? (
+          <Keyboard style={{ color: keyboardColor, fontSize: size }}></Keyboard>
+        ) : (
+          <Dangerous
+            style={{ color: keyboardColor, fontSize: size }}
+          ></Dangerous>
+        )}
+      </div>
+      <div style={{ margin: 0 }}>
+        <p style={{ fontSize: (8 * size) / 120 }}>{name.slice(0, 10)}</p>
+      </div>
+    </div>
   );
 };
 
@@ -90,7 +100,6 @@ const InGameView: React.FC<InGameViewProps> = ({
       borderRadius: "10px",
       border: `2px solid ${borderColor}`,
       width: "600px",
-      height: "600",
       display: "flex",
       flexDirection: flexDirection, // Use the passed-in flex direction
       alignItems: "center",
@@ -112,7 +121,7 @@ const InGameView: React.FC<InGameViewProps> = ({
             </h2>{" "}
             <input
               type="text"
-              style={{ fontSize: 20, borderColor: borderColor }}
+              style={{ fontSize: 20, marginBottom: "20px" }}
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyPress}
@@ -130,22 +139,17 @@ const InGameView: React.FC<InGameViewProps> = ({
             {KeyboardView({
               words: playerState?.wordsInQueue ?? 0,
               alive: playerState?.alive ?? true,
-              size: 100,
+              size: 120,
+              name: playerState?.name ?? "",
             })}
           </div>
           <div>
-            <p>{playerState?.wordsInQueue} / 20 Words</p>
-          </div>
-          <div>
-            <p>{playerState?.kills} Kills</p>
-          </div>
-          <div>
-            <div className={playerRecentlyDied ? "flashing-text" : ""}>
-              <p>
-                {(playerState?.playersLeft ?? 0) - (playerState?.alive ? 1 : 0)}{" "}
-                Enemies Alive
-              </p>
-            </div>
+            <p>
+              {playerState?.wordsInQueue} / 20 Words, {playerState?.kills}{" "}
+              Kills, and{" "}
+              {(playerState?.playersLeft ?? 0) - (playerState?.alive ? 1 : 0)}
+              Enemies Alive
+            </p>
           </div>
           <div
             style={{
@@ -170,7 +174,12 @@ const InGameView: React.FC<InGameViewProps> = ({
                       justifyContent: "center",
                     }}
                   >
-                    {KeyboardView({ words: p.words, alive: p.alive, size: 50 })}
+                    {KeyboardView({
+                      words: p.words,
+                      alive: p.alive,
+                      name: p.name,
+                      size: 50,
+                    })}
                   </div>
                 );
               })}
