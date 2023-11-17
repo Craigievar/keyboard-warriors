@@ -55,7 +55,7 @@ const KeyboardView: React.FC<KeyboardViewProps> = ({
         )}
       </div>
       <div style={{ margin: 0 }}>
-        <p style={{ fontSize: (8 * size) / 120 }}>{name.slice(0, 10)}</p>
+        <p style={{ fontSize: (20 * size) / 120 }}>{name.slice(0, 10)}</p>
       </div>
     </div>
   );
