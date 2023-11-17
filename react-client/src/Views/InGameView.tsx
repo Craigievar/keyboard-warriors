@@ -47,15 +47,25 @@ const KeyboardView: React.FC<KeyboardViewProps> = ({
     >
       <div style={{ margin: 0 }}>
         {alive ? (
-          <Keyboard style={{ color: keyboardColor, fontSize: size }}></Keyboard>
+          <Keyboard
+            style={{
+              color: keyboardColor,
+              fontSize: size,
+              marginBottom: "0px",
+            }}
+          ></Keyboard>
         ) : (
           <Dangerous
-            style={{ color: keyboardColor, fontSize: size }}
+            style={{
+              color: keyboardColor,
+              fontSize: size,
+              marginBottom: "0px",
+            }}
           ></Dangerous>
         )}
       </div>
-      <div style={{ margin: 0 }}>
-        <p style={{ fontSize: (20 * size) / 120 }}>{name.slice(0, 10)}</p>
+      <div style={{ marginTop: `-${size / 2.5}px`, height: `${size / 2}px` }}>
+        <p style={{ fontSize: (30 * size) / 120 }}>{name.slice(0, 20)}</p>
       </div>
     </div>
   );
@@ -101,6 +111,7 @@ const InGameView: React.FC<InGameViewProps> = ({
       border: `2px solid ${borderColor}`,
       width: "600px",
       display: "flex",
+      padding: "20px",
       flexDirection: flexDirection, // Use the passed-in flex direction
       alignItems: "center",
       justifyContent: "center",
@@ -147,7 +158,7 @@ const InGameView: React.FC<InGameViewProps> = ({
             <p>
               {playerState?.wordsInQueue} / 20 Words, {playerState?.kills}{" "}
               Kills, and{" "}
-              {(playerState?.playersLeft ?? 0) - (playerState?.alive ? 1 : 0)}
+              {(playerState?.playersLeft ?? 0) - (playerState?.alive ? 1 : 0)}{" "}
               Enemies Alive
             </p>
           </div>
@@ -168,8 +179,8 @@ const InGameView: React.FC<InGameViewProps> = ({
                   <div
                     key={index}
                     style={{
-                      width: `calc(20% - 20px)`, // Adjust width to account for margins
-                      margin: "10px",
+                      width: `calc(20% - 40px)`, // Adjust width to account for margins
+                      margin: "20px",
                       display: "flex",
                       justifyContent: "center",
                     }}
