@@ -2,10 +2,10 @@ import { generateRandomName, randomWord } from "../gamelogic";
 
 import { GameRoom } from "./GameRoom";
 import { Socket } from "socket.io";
-import { Statsig } from "statsig-node";
 import { WORDS_TO_DIE } from "../config";
 import { randomUUID } from "crypto";
 
+const Statsig = require("statsig-node");
 // Player object. Can be in a game or not.
 // Interacts with the game it's in for game loop
 // to consider: solve circular dependency?
@@ -140,10 +140,13 @@ export class Player {
   }
 
   public addWord(word: string) {
-    const minLength = Statsig.getExperimentSync(
-      { customIDs: { socketID: this.id } },
-      "harder_words"
-    ).get("minWordLength", 0);
+    const minLength = this.isBot
+      ? 0
+      : Statsig.getExperimentSync(
+          { customIDs: { socketID: this.id } },
+          "harder_words"
+        ).get("minWordLength", 0);
+
     let realWord;
     if (word.length < minLength) {
       realWord = word;
