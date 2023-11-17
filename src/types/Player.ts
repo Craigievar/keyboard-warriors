@@ -2,6 +2,7 @@ import { generateRandomName, randomWord } from "../gamelogic";
 
 import { GameRoom } from "./GameRoom";
 import { Socket } from "socket.io";
+import { Statsig } from "statsig-node";
 import { WORDS_TO_DIE } from "../config";
 import { randomUUID } from "crypto";
 
@@ -139,7 +140,18 @@ export class Player {
   }
 
   public addWord(word: string) {
-    this.nextWords.push(word);
+    const minLength = Statsig.getExperimentSync(
+      { customIDs: { socketID: this.id } },
+      "harder_words"
+    ).get("minWordLength", 0);
+    let realWord;
+    if (word.length < minLength) {
+      realWord = word;
+      while (realWord.length < minLength) {
+        realWord = randomWord();
+      }
+    }
+    this.nextWords.push(realWord ?? word);
     this.checkIfDied();
     this.updated = true;
   }
