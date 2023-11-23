@@ -14,7 +14,7 @@ const PopUpMessage: React.FC<PopUpMessageProps> = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       onDisappear();
-    }, 1000); // Disappears after 1 second
+    }, 3000); // Disappears after 1 second
     return () => clearTimeout(timer);
   }, [onDisappear]);
 

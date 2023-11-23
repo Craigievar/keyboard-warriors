@@ -5,6 +5,7 @@ interface PlayerState {
   wordsInQueue: number;
   kills: number;
   prevWords: string[];
+  prevWordCount: number;
   alive: boolean;
   rightAnswers: number;
   wrongAnswers: number;
@@ -12,6 +13,9 @@ interface PlayerState {
   currentGameState: "LOBBY" | "INGAME" | null;
   won: boolean | null;
   lobbyCode: string;
+  playersInGame: number;
+  rank: number;
+  lastGameDuration: number;
   playersInLobby: string;
   playerStates: {
     id: string;

@@ -1,6 +1,8 @@
+import React, { useState } from "react";
+
+import EndGameMessage from "../Components/EndGameMessage";
 import LobbyState from "../Models/LobbyState";
 import PlayerState from "../Models/PlayerState";
-import React from "react";
 
 interface LobbyViewProps {
   playerState: PlayerState | null; // Replace with your appropriate type
@@ -17,16 +19,22 @@ const LobbyView: React.FC<LobbyViewProps> = ({
   onAddBot,
   onRemoveBots,
 }) => {
+  const [endGamePopupClosed, setEndGamePopupClosed] = useState(false);
   return (
     <div>
       {/* todo clean up the logic for won/lost - really this can just be a triggered alert */}
-      <p>
-        {playerState?.won === true
-          ? "You won the last game!"
-          : playerState?.alive === false
-          ? "You lost the last game!"
-          : ""}
-      </p>
+      <div>
+        {playerState &&
+          (playerState.won === true || playerState.alive === false) &&
+          !endGamePopupClosed && (
+            <EndGameMessage
+              playerState={playerState}
+              hide={() => {
+                setEndGamePopupClosed(true);
+              }}
+            />
+          )}
+      </div>
       <p>{playerState?.playersInLobby} Players in Lobby</p>
       <p>Lobby Code: {playerState?.lobbyCode}</p>
       <div>

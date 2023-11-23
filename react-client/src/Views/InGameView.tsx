@@ -118,7 +118,6 @@ const InGameView: React.FC<InGameViewProps> = ({
     });
 
   const StyledBoxColumn = createStyledBox("column");
-  const StyledBoxRow = createStyledBox("row");
 
   return (
     <div>
@@ -136,6 +135,8 @@ const InGameView: React.FC<InGameViewProps> = ({
               value={inputValue}
               onChange={handleInputChange}
               onKeyDown={handleKeyPress}
+              autoFocus={true}
+              onPaste={(e) => e.preventDefault()}
             />
           </div>
         ) : (

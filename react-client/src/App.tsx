@@ -18,7 +18,7 @@ const App: React.FC = () => {
     "MENU"
   );
   const [playerState, setPlayerState] = useState<PlayerState | null>(null);
-  const [popupMessage, setPopupMessage] = useState<string>("");
+  const [popupMessages, setPopupMessages] = useState<string[]>([]);
   const [isShaking, setIsShaking] = useState(false);
   const [playerRecentlyDied, setPlayerRecentlyDied] = useState(false);
   const [removedWords, setRemovedWords] = useState([] as string[]);
@@ -30,6 +30,11 @@ const App: React.FC = () => {
 
   const playSound = (soundFile: string): void => {
     new Audio(soundFile).play();
+  };
+
+  const removePopupMessage = (msg: string): void => {
+    const messages = popupMessages;
+    setPopupMessages(messages.filter((m) => m !== msg));
   };
 
   const handleConnect = () => {
@@ -92,14 +97,24 @@ const App: React.FC = () => {
     });
 
     newSocket.on("attacked", (data: AttackedData) => {
-      setPopupMessage(`Attacked by ${data.attackerName ?? "Unknown"}`);
+      const newPopups = popupMessages;
+      newPopups.push(`Attacked by ${data.attackerName ?? "Unknown"}`);
+      setPopupMessages(newPopups);
+      setTimeout(() => {
+        removePopupMessage(`Attacked by ${data.attackerName ?? "Unknown"}`);
+      }, 3000);
       console.log("attacked msg");
       // playSound("path/to/attack-sound.mp3");
     });
 
     newSocket.on("killedPlayer", (data: KilledPlayerData) => {
-      setPopupMessage(`Killed ${data.victimName}`);
+      const newPopups = popupMessages;
+      newPopups.push(`Killed ${data.victimName}`);
+      setPopupMessages(newPopups);
       console.log("killed player msg");
+      setTimeout(() => {
+        removePopupMessage(`Killed ${data.victimName}`);
+      }, 3000);
       // playSound("path/to/killed-sound.mp3");
     });
 
@@ -198,12 +213,18 @@ const App: React.FC = () => {
       case "INGAME":
         return (
           <div>
-            {popupMessage && (
+            <div>
+              {/* {popupMessage && (
               <PopUpMessage
                 message={popupMessage}
                 onDisappear={() => setPopupMessage("")}
               />
-            )}
+            )} */}
+
+              {popupMessages.map((m) => (
+                <PopUpMessage message={m} onDisappear={() => {}} />
+              ))}
+            </div>
             <InGameView
               playerState={playerState}
               sendWord={sendWord}

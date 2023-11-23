@@ -21,6 +21,7 @@ export class GameRoom {
   lastPlayerJoinOrLeave: number | null;
   playersWhenGameStarted: number | null;
   gameStartTime: number;
+  lastDuration: number;
   ticks: number;
 
   constructor() {
@@ -39,6 +40,7 @@ export class GameRoom {
     this.playersWhenGameStarted = null;
     this.ticks = 0;
     this.gameStartTime = 0;
+    this.lastDuration = 0;
   }
 
   public generateWords() {
@@ -74,11 +76,10 @@ export class GameRoom {
         `Game over, winner is ${this.players.find((p) => p.alive)?.id}`
       );
       this.endTime = Date.now();
+      this.lastDuration = (this.endTime - this.gameStartTime) / 1000;
       console.log(
-        `${this.ticks} ticks in ${
-          (this.endTime - this.gameStartTime) / 1000
-        } seconds or ${
-          (1000 * this.ticks) / (this.endTime - this.gameStartTime)
+        `${this.ticks} ticks in ${this.lastDuration} seconds or ${
+          this.ticks / this.lastDuration
         } ticks per second`
       );
       this.state = "LOBBY";
@@ -87,6 +88,7 @@ export class GameRoom {
         if (player.alive) {
           this.winner = player;
           player.won = true;
+          player.deathTime = (Date.now() - this.gameStartTime) / 1000;
           if (!player.isBot) {
             Statsig.logEvent(
               {
@@ -111,8 +113,9 @@ export class GameRoom {
     return this.numPlayersAlive;
   }
 
-  public calculatePlayersAlive() {
+  public calculatePlayersAlive(): number {
     this.numPlayersAlive = (this.players ?? []).filter((p) => p.alive).length;
+    return this.numPlayersAlive;
   }
 
   public tick() {

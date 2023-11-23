@@ -33,6 +33,7 @@ export class Player {
   id: string;
   socket: Socket | null;
   nextBotAttackTime: number;
+  lastRank: number;
   sendMessage: ((id: string, header: string, message: string) => void) | null;
 
   constructor(
@@ -65,6 +66,7 @@ export class Player {
     this.sendMessage = messageFn;
     this.isBot = isBot;
     this.nextBotAttackTime = 0;
+    this.lastRank = 0;
   }
 
   public checkIfDied() {
@@ -83,6 +85,7 @@ export class Player {
       }
       this.deathTime = Date.now();
       this.updated = true;
+      this.lastRank = (this.game?.calculatePlayersAlive() ?? 0) + 1;
       this.game?.sendPlayerDiedAlert(this.lastAttacker);
     }
   }
@@ -171,11 +174,16 @@ export class Player {
       wordsInQueue: this.nextWords.length,
       kills: this.kills,
       prevWords: this.prevWords.slice(0, 10),
+      prevWordCount: this.prevWords.length,
       alive: this.alive,
       rightAnswers: this.rightAnswers,
       wrongAnswers: this.wrongAnswers,
       playersLeft: this.game?.playersAlive(),
       currentGameState: this.game?.state,
+      playersInGame: this.game?.playersWhenGameStarted,
+      lastGameDuration:
+        ((this.deathTime ?? 0) - (this.game?.gameStartTime ?? 0)) / 1000,
+      rank: this.lastRank,
       won: this.won,
       //todo factor these into separate websocket calls
       playersInLobby: this.game?.players.length,

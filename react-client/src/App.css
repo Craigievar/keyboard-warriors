@@ -107,13 +107,17 @@ button:hover {
   padding: 10px;
   border-radius: 5px;
   z-index: 1000; /* High z-index to float above other elements */
-  animation: driftUp 1s ease-in-out forwards;
+  animation: driftUp 3s ease-in-out forwards;
 }
 
 @keyframes driftUp {
   0% {
     top: 40%;
     opacity: 1;
+  }
+  30% {
+    top: 30%;
+    opacity: 0.5;
   }
   100% {
     top: 30%; /* Adjust the drifting distance as needed */
@@ -178,6 +182,23 @@ button:hover {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+}
+
+.endgame-screen {
+  background-color: black;
+  border-radius: 10px;
+  border: 2px solid var(--border-color, #fff); /* default color is white if not set */
+  width: 600px;
+  display: flex;
+  flex-direction: column; /* Set the flex direction to column for vertical layout */
+  padding: 20px;
+  align-items: center; /* Align items horizontally in the center */
+  justify-content: center; /* Space out items vertically */
+  position: fixed; /* To float on top */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for exact centering */
+  box-sizing: border-box; /* Include padding and border in the width */
 }
 
 .keyboardView {
