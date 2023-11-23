@@ -88,7 +88,7 @@ export class GameRoom {
         if (player.alive) {
           this.winner = player;
           player.won = true;
-          player.deathTime = (Date.now() - this.gameStartTime) / 1000;
+          player.deathTime = Date.now();
           if (!player.isBot) {
             Statsig.logEvent(
               {
