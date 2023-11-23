@@ -112,15 +112,15 @@ button:hover {
 
 @keyframes driftUp {
   0% {
-    top: 40%;
+    top: 50%;
     opacity: 1;
   }
   30% {
-    top: 30%;
+    top: 35%;
     opacity: 0.5;
   }
   100% {
-    top: 30%; /* Adjust the drifting distance as needed */
+    top: 35%; /* Adjust the drifting distance as needed */
     opacity: 0;
   }
 }
