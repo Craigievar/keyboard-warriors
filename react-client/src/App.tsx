@@ -42,12 +42,12 @@ const App: React.FC = () => {
     const newSocket = io(server);
     const cookieID = setOrUpdateCookie();
 
-    console.log("Cookie ID " + cookieID);
-    newSocket.emit("cookie_id", { id: cookieID });
-
     newSocket.on("connect", () => {
       console.log("Connected to the socket server " + server);
       setGameState("MENU"); // Update the game state as needed
+
+      console.log("Cookie ID " + cookieID);
+      newSocket.emit("cookie_id", { id: cookieID });
     });
 
     newSocket.on("disconnect", () => {
