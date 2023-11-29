@@ -149,7 +149,7 @@ export class Player {
       ? 0
       : Statsig.getExperimentSync(
           { customIDs: { cookieID: this.cookieID } },
-          "harder_words"
+          "harder_words_cookies"
         ).get("minWordLength", 0);
 
     let realWord;
