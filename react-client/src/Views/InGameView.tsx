@@ -124,11 +124,11 @@ const InGameView: React.FC<InGameViewProps> = ({
       <div>
         {playerState?.alive ? (
           <div>
-            <h2>
+            <h1>
               {playerState?.nextWords.length === 0
                 ? "-"
                 : playerState?.nextWords[0]}{" "}
-            </h2>{" "}
+            </h1>{" "}
             <input
               type="text"
               style={{ fontSize: 20, marginBottom: "20px" }}
