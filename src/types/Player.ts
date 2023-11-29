@@ -34,6 +34,7 @@ export class Player {
   socket: Socket | null;
   nextBotAttackTime: number;
   lastRank: number;
+  cookieID: string | null;
   sendMessage: ((id: string, header: string, message: string) => void) | null;
 
   constructor(
@@ -67,6 +68,7 @@ export class Player {
     this.isBot = isBot;
     this.nextBotAttackTime = 0;
     this.lastRank = 0;
+    this.cookieID = null;
   }
 
   public checkIfDied() {
@@ -146,7 +148,7 @@ export class Player {
     const minLength = this.isBot
       ? 0
       : Statsig.getExperimentSync(
-          { customIDs: { socketID: this.id } },
+          { customIDs: { cookieID: this.cookieID } },
           "harder_words"
         ).get("minWordLength", 0);
 

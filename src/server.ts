@@ -101,6 +101,15 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
       }
     });
 
+    socket.on("cookie_id", function (data) {
+      const player = getPlayer(socket);
+      if (player) {
+        //todo hide client until cookie is set?
+        console.log("got player name");
+        player.cookieID = data.id;
+      }
+    });
+
     socket.on("leave_game", function () {
       console.log("disconnecting player");
       const player = getPlayer(socket);
@@ -123,7 +132,11 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
 
         Statsig.logEvent(
           {
-            customIDs: { gameID: game.roomId, socketID: player.id },
+            customIDs: {
+              gameID: game.roomId,
+              socketID: player.id,
+              cookieID: player.cookieID,
+            },
           },
           "created_game"
         );
@@ -153,7 +166,11 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
           console.log(game?.roomId);
           Statsig.logEvent(
             {
-              customIDs: { gameID: game.roomId, socketID: player.id },
+              customIDs: {
+                gameID: game.roomId,
+                socketID: player.id,
+                cookieID: player.cookieID,
+              },
             },
             "joined_game",
             null,
@@ -186,14 +203,18 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
         const game = randomElement(publicGames) as GameRoom;
         Statsig.logEvent(
           {
-            customIDs: { socketID: player.id },
+            customIDs: { socketID: player.id, cookieID: player.cookieID },
           },
           "searched_for_game"
         );
         if (games.length > 0 && game) {
           Statsig.logEvent(
             {
-              customIDs: { gameID: game.roomId, socketID: player.id },
+              customIDs: {
+                gameID: game.roomId,
+                socketID: player.id,
+                cookieID: player.cookieID,
+              },
             },
             "joined_game",
             null,
@@ -212,7 +233,11 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
 
             Statsig.logEvent(
               {
-                customIDs: { gameID: game.roomId, socketID: player.id },
+                customIDs: {
+                  gameID: game.roomId,
+                  socketID: player.id,
+                  cookieID: player.cookieID,
+                },
               },
               "created_game"
             );

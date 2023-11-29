@@ -92,7 +92,11 @@ export class GameRoom {
           if (!player.isBot) {
             Statsig.logEvent(
               {
-                customIDs: { gameID: this.roomId, socketID: player.id },
+                customIDs: {
+                  gameID: this.roomId,
+                  socketID: player.id,
+                  cookieID: player.cookieID,
+                },
               },
               "won_game",
               null,
@@ -206,7 +210,11 @@ export class GameRoom {
     player.message("current_game_code", "");
     Statsig.logEvent(
       {
-        customIDs: { gameID: this.roomId, socketID: player.id },
+        customIDs: {
+          gameID: this.roomId,
+          socketID: player.id,
+          cookieID: player.cookieID,
+        },
       },
       "left_game"
     );
@@ -229,7 +237,11 @@ export class GameRoom {
       if (!player.isBot) {
         Statsig.logEvent(
           {
-            customIDs: { gameID: this.roomId, socketID: player.id },
+            customIDs: {
+              gameID: this.roomId,
+              socketID: player.id,
+              cookieID: player.cookieID,
+            },
           },
           "game_start"
         );

@@ -9,6 +9,7 @@ import LobbyView from "./Views/LobbyView";
 import MenuView from "./Views/MenuView";
 import PlayerState from "./Models/PlayerState";
 import PopUpMessage from "./Components/PopUpMessage";
+import { setOrUpdateCookie } from "./CookieUtils";
 
 // const server = "http://localhost:3000";
 const server = "https://keyboard-warriors-6471fc11631d.herokuapp.com";
@@ -39,6 +40,9 @@ const App: React.FC = () => {
 
   const handleConnect = () => {
     const newSocket = io(server);
+    const cookieID = setOrUpdateCookie();
+
+    newSocket.emit("cookie_id", { id: cookieID });
 
     newSocket.on("connect", () => {
       console.log("Connected to the socket server " + server);
