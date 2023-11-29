@@ -105,7 +105,7 @@ Statsig.initialize(process.env.STATSIG_SERVER_SECRET, {
       const player = getPlayer(socket);
       if (player) {
         //todo hide client until cookie is set?
-        console.log("got player name");
+        console.log("got player cookie id " + data.id);
         player.cookieID = data.id;
       }
     });

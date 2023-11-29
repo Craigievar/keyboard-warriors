@@ -42,6 +42,7 @@ const App: React.FC = () => {
     const newSocket = io(server);
     const cookieID = setOrUpdateCookie();
 
+    console.log("Cookie ID " + cookieID);
     newSocket.emit("cookie_id", { id: cookieID });
 
     newSocket.on("connect", () => {
